@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+<!-- sgmlㅡ>html(web)ㅡ>xml -->
+<!-- 스프링 시작할 때 싱글톤 객체를 만들어달라고 정의하는 파일: context파일 -->
+
+	<!-- 1. dbcp -->
+	<!-- BasicDataSource dbcp = new BasicDataSource(); 기본생성자인 경우 -->
+	<bean id="dbcp" class="org.apache.commons.dbcp.BasicDataSource">
+		<!-- db connection pool을 만들기 위해, driver, usl, user, pw -->
+		<!-- property 태그는 각 변수의 set메서드를 호출해서 값을 넣어준다. -->
+		<!-- dbcp.setUrl("~~~"); -->
+		<property name="driverClassName" value="oracle.jdbc.OracleDriver"></property>
+		<property name="url" value="jdbc:oracle:thin:@localhost:1521:xe"></property>
+		<property name="username" value="root"></property>
+		<property name="password" value="1234"></property>
+	</bean>
+	
+	<!-- 2. mybatis와 관련된 설정이 많아서, 설정만 따로 해주는 클래스의 객체 -->
+	<bean id="config" class="org.mybatis.spring.SqlSessionFactoryBean">
+		<property name="configLocation" value="classpath:mybatis-config.xml"></property>
+		<property name="dataSource" ref="dbcp"></property>
+	</bean>
+	
+	<!-- 3. mybatis -->
+	<!-- SqlSessionTemplate mybatis = new SqlSessionTemplate(config); -->
+	<bean id="mybatis" class="org.mybatis.spring.SqlSessionTemplate">
+		<!-- 객체 생성시 파라메터 있는 생성자를 호출하는 경우에는 constructor-arg태그 넣어줘야 -->
+		<!-- constructor-arg 태그 내에 파라메터 값을 넣어줌. -->
+		<constructor-arg ref="config"></constructor-arg>
+	</bean>
+</beans>
+<!-- mybatis설정 객체에 dbcp를 끼우고 그것을 mybatis에 끼우는 것 -->
